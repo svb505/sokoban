@@ -7,19 +7,30 @@
 #include "field.h"
 #include "points.h"
 #include "returnFromJson.h"
+#include <iostream>
 
-const int countBox = 4;
+int countBox = 0;
 
 void Box::getFinish(Points& p) {
+	int count = 0;
+
 	for (int i = 0; i < countBox; i++) {
 		for (auto c : p.coordinates) {
-			if (c.x == coordinates[i].pos.x && c.y == coordinates[i].pos.y) boxDown[i] = true;
+			if (c.x == coordinates[i].pos.x && c.y == coordinates[i].pos.y) {
+				boxDown[i] = true;
+				count++;
+			}
+			
 		}
 	}
+
+	if (count == countBox) userWin = true;
 }
 
 void Box::setCoordinates() {
 	std::vector<Vec2> buf = returnValueFromJson("maze.json", "boxes");
+
+	countBox = buf.size();
 
 	for (int i = 0; i < buf.size();i++) {
 		coordinates[i] = { buf[i],20.0f };
@@ -28,10 +39,11 @@ void Box::setCoordinates() {
 }
 void Box::drawBox() {
 	glEnable(GL_TEXTURE_2D);
+	
 	GLuint boxTex = 0;
 	float h = 40.0f * 0.5f;
 
-	for (auto c : coordinates) {
+	for (auto& c : coordinates) {
 		if (boxDown[c.first]) boxTex = allTextures["boxF"];
 		else boxTex = allTextures["box"];
 

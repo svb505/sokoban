@@ -9,8 +9,8 @@
 #include "moving.h"
 #include "returnFromJson.h"
 
-#define ECRANW 1200
-#define ECRANH 900
+#define ECRANW 1000
+#define ECRANH 1000
 #define SCENE 200
 
 Player player;
@@ -32,6 +32,7 @@ void processInput(GLFWwindow* window,float dt){
     static bool prevS = false;
     static bool prevA = false;
     static bool prevD = false;
+    static bool prevR = false;
 
     float speed = 40.0f;
 
@@ -40,23 +41,30 @@ void processInput(GLFWwindow* window,float dt){
         tryMovePlayer(player.collider,box.coordinates,field.verticlesLabirynt, field.verticlesBord,
         box.boxDown,Direction::Up,speed);
     }
-
     if (isPressed(window, GLFW_KEY_S,prevS)) {
         tryMovePlayer(player.collider,box.coordinates,field.verticlesLabirynt, field.verticlesBord,
         box.boxDown,Direction::Down,speed);
     }
-
     if (isPressed(window, GLFW_KEY_A,prevA)) {
         tryMovePlayer(player.collider,box.coordinates,field.verticlesLabirynt, field.verticlesBord,
         box.boxDown, Direction::Left,speed);
     }
-
     if (isPressed(window, GLFW_KEY_D, prevD)) {
         tryMovePlayer(player.collider, box.coordinates, field.verticlesLabirynt, field.verticlesBord,
         box.boxDown, Direction::Right, speed);
     }
-}
+    if (isPressed(window, GLFW_KEY_R, prevR)) {
+        field.loadWallsToField("maze.json", field.verticlesLabirynt);
 
+        box.setCoordinates();
+        points.coordinates = returnValueFromJson("maze.json", "circles");
+
+        for (auto& b : box.boxDown) b.second = false;
+    }
+}
+void framebuffer_size_callback(GLFWwindow* window, int width, int height){
+    glViewport(0, 0, width, height);
+}
 int main(){
     if (!glfwInit()){
         std::cout << "Failed to initialize GLFW\n";
@@ -89,6 +97,8 @@ int main(){
     double lastTime = glfwGetTime();
     double deltaTime = 0.0;
 
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
     while (!glfwWindowShouldClose(window)){
         double currentTime = glfwGetTime();
 
@@ -108,6 +118,8 @@ int main(){
         points.draw();
 
         box.getFinish(points);
+
+        if (box.userWin) drawText(0, 0, "Win");
 
         glfwSwapBuffers(window);
         glfwPollEvents();

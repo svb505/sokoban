@@ -3,13 +3,15 @@
 #include <map>
 #include "objects.h"
 
-extern const int countBox;
+extern int countBox;
 
 class Field;
 class Points;
 
 class Box {
 public:
+	bool userWin = false;
+
 	std::map<int,BoxCollider> coordinates;
 	std::map<int, bool> boxDown;
 

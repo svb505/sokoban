@@ -40,14 +40,6 @@ void Field::loadWallsToField(const std::string& path,std::vector<Wall>& verticle
 void Field::addWall(std::vector<Wall>& container,float x1,float y1,float x2,float y2) {
 	container.push_back({{x1, y1},{x2, y2}});
 }
-void drawText(float x, float y, const std::string& text) {
-	glRasterPos2f(x, y);
-
-	for (char c : text) {
-		wglUseFontBitmaps(wglGetCurrentDC(), c, 1, 1000 + c);
-		glCallList(1000 + c);
-	}
-}
 
 Field::Field(int EW, int EH) {
 	addWall(verticlesBord,-(EW - 20.0f), EH - 10.0f,EW - 20.0f, EH - 10.0f);
@@ -75,7 +67,7 @@ void Field::setLabirynt(int EW, int EH) {
 }
 void Field::drawPerimetr() {
 	glColor3f(1.0f,0.0f,0.0f);
-	glLineWidth(7.0f);
+	glLineWidth(20.0f);
 	glBegin(GL_LINES);
 
 	for (const Wall& wall : verticlesBord) {
@@ -87,7 +79,7 @@ void Field::drawPerimetr() {
 }
 void Field::drawLab() {
 	glColor3f(1.0f, 0.5f, 0.0f);
-	glLineWidth(5.0f);
+	glLineWidth(20.0f);
 	glBegin(GL_LINES);
 
 	for (const Wall& wall : verticlesLabirynt) {
