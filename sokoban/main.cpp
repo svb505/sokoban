@@ -8,6 +8,7 @@
 #include "points.h"
 #include "moving.h"
 #include "returnFromJson.h"
+#include <format>
 
 #define ECRANW 1000
 #define ECRANH 1000
@@ -17,6 +18,9 @@ Player player;
 Field field(SCENE, SCENE);
 Box box;
 Points points;
+
+int currentLvl = 1;
+constexpr int MAX_LVL = 5;
 
 inline bool isPressed(GLFWwindow* w, int key, bool& prev) {
     bool curr = glfwGetKey(w, key) == GLFW_PRESS;
@@ -54,10 +58,10 @@ void processInput(GLFWwindow* window,float dt){
         box.boxDown, Direction::Right, speed);
     }
     if (isPressed(window, GLFW_KEY_R, prevR)) {
-        field.loadWallsToField("maze.json", field.verticlesLabirynt);
+        field.loadWallsToField(std::format("levels/lvl{}.json",currentLvl), field.verticlesLabirynt);
 
-        box.setCoordinates();
-        points.coordinates = returnValueFromJson("maze.json", "circles");
+        box.setCoordinates(std::format("levels/lvl{}.json", currentLvl));
+        points.coordinates = returnValueFromJson(std::format("levels/lvl{}.json", currentLvl), "circles");
 
         for (auto& b : box.boxDown) b.second = false;
     }
@@ -87,10 +91,10 @@ int main(){
     glOrtho(-SCENE, SCENE, -SCENE, SCENE, -SCENE, SCENE);
     glMatrixMode(GL_MODELVIEW);
 
-    field.loadWallsToField("maze.json",field.verticlesLabirynt);
+    field.loadWallsToField(std::format("levels/lvl{}.json", currentLvl),field.verticlesLabirynt);
 
-    box.setCoordinates();
-    points.coordinates = returnValueFromJson("maze.json", "circles");
+    box.setCoordinates(std::format("levels/lvl{}.json", currentLvl));
+    points.coordinates = returnValueFromJson(std::format("levels/lvl{}.json", currentLvl), "circles");
 
     LoadAllTextures();
 
@@ -119,7 +123,22 @@ int main(){
 
         box.getFinish(points);
 
-        if (box.userWin) drawText(0, 0, "Win");
+        if (box.userWin) {
+            if (currentLvl == MAX_LVL) currentLvl = 0;
+
+            currentLvl++;
+            box.userWin = false;
+
+            field.verticlesLabirynt.clear();
+            box.coordinates.clear();
+            box.boxDown.clear();
+            points.coordinates.clear();
+
+            field.loadWallsToField(std::format("levels/lvl{}.json", currentLvl), field.verticlesLabirynt);
+
+            box.setCoordinates(std::format("levels/lvl{}.json", currentLvl));
+            points.coordinates = returnValueFromJson(std::format("levels/lvl{}.json", currentLvl), "circles");
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();

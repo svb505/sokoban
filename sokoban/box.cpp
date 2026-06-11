@@ -27,8 +27,8 @@ void Box::getFinish(Points& p) {
 	if (count == countBox) userWin = true;
 }
 
-void Box::setCoordinates() {
-	std::vector<Vec2> buf = returnValueFromJson("maze.json", "boxes");
+void Box::setCoordinates(std::string path) {
+	std::vector<Vec2> buf = returnValueFromJson(path, "boxes");
 
 	countBox = buf.size();
 

@@ -15,7 +15,7 @@ public:
 	std::map<int,BoxCollider> coordinates;
 	std::map<int, bool> boxDown;
 
-	void setCoordinates();
+	void setCoordinates(std::string path);
 	void drawBox();
 	void getFinish(Points& p);
 };
